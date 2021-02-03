@@ -16,7 +16,8 @@ def new_turtle(colors=None,show_drawing=False):
         t.hideturtle()
         t.speed(0)
     return t
-
+screen = turtle.Screen()
+screen.tracer(0,0)
 t1 = new_turtle(colors='red')
 t1.begin_fill()
 t1.circle(200,steps=800)
@@ -28,5 +29,5 @@ for _ in range(5):
     t2.forward(80)
     t2.right(144)
 t2.end_fill()
-
+screen.update()
 turtle.done()
