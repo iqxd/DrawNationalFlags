@@ -1,104 +1,41 @@
-import turtle
-import math
+import turtledraw as td
 
-_Fill = False
-_Animation = True
+td.set_turtle(True)
+td.set_filling(True)
+td.set_animation(True)
 
-class Pen(turtle.Turtle):
-    def __init__(self,position=None,colors=None,fill=None,animate=None,*args,**kwargs):
-        super().__init__(*args,**kwargs)
-        self.hideturtle()
-        self.position = position
-        self.fill = fill
-        self.animate = animate
-        if self.position:
-            self.penup()
-            self.goto(*self.position)
-            self.pendown()
-        if isinstance(colors,str):
-            pen_color = fill_color = colors
-        elif isinstance(colors,tuple) or isinstance(colors,list):
-            pen_color,fill_color = colors
-        else:
-            pen_color = fill_color = None
-        if pen_color:
-            self.pencolor(pen_color)
-        if fill_color:
-            self.fillcolor(fill_color)
-        if fill is None:
-            self.fill = _Fill
-        if animate is None:
-            self.animate = _Animation
+HEIGHT = 400
+h=height = HEIGHT
+w=width = int(height * 1.9)
 
-    def __enter__(self):
-        if self.animate:
-            self.speed(0)
-            self.getscreen().tracer(1,25)
-        else:
-            self.speed(0)
-            self.getscreen().tracer(0,0)
-        if self.fill:
-            self.begin_fill()
-        return self
+hs = strip_height = height/13
+wa = star_area_width = width * 2 / 5
+ha = star_area_height = height * 7 / 13
+wc = star_cell_width = star_area_width * 3 / 35
+hc = star_cell_height = star_area_height * 3 / 29
+wp = star_padding_width = star_area_width * 1 / 35
+hp = star_padding_height = star_area_height * 1 / 29
 
-    def __exit__(self,exc_type,exc_val,exc_tb):
-        if self.fill:
-            self.end_fill()
-        if not self.animate:
-            self.getscreen().update()
+td.set_window('National Flag',width=width,height=height,bg='black')
 
-def set_window(title='',width=None,height=None,bg=None):
-    screen = turtle.Screen()
-    screen.title(title)
-    if width is None or height is None:
-        screen.setup(width=0.5, height=0.5, startx=None, starty=None)
+td.rect((-(w-wa)/2,(h-ha)/2),wa,ha,colors='blue')
+
+for i in range(13):
+    if i <7:
+        center_x,ws = wa/2,w-wa
     else:
-        screen.setup(width,height,None,None)
-    if bg:
-        screen.bgcolor(bg)
+        center_x,ws = 0,w
+    center_y = h/2-hs/2-hs*i
+    strip_color = 'white' if i%2 else 'red'
+    td.rect((center_x,center_y),ws,hs,strip_color)
 
-def set_filling(yn):
-    global _Fill
-    _Fill = yn
+for i in range(11):
+    for j in range(9):
+        if (i+j) % 2 == 0:
+            rx,ry = (i+0.5)*wc,(j+0.5)*hc
+            center = (-w/2+wp+rx,h/2-hp-ry)
+            td.star(center,90,hc/2,colors='white')
 
-def set_animation(yn):
-    global _Animation
-    _Animation = yn
+td.show()
 
-def show():
-    turtle.done()
-
-def star(center,degoff,radius,*,colors=None,fill=None,animate=None):
-    sidelen = 2*radius*math.cos(0.1*math.pi)
-    with Pen(center,colors,fill,animate) as t:
-        t.setheading(degoff)
-        t.penup()
-        t.forward(radius)
-        t.pendown()
-        t.left(162)
-        for _ in range(5):
-            t.forward(sidelen)
-            t.left(144)
-        t.penup()
-        t.goto(center)
-        t.pendown()
-
-
-def rect(center,width,height,colors=None,fill=None,animate=None):
-    with Pen(center,colors,fill,animate) as t:
-        t.penup()
-        t.goto(center[0]+width/2,center[1]+height/2)
-        t.pendown()
-        t.setheading(180)
-        t.forward(width)
-        t.left(90)
-        t.forward(height)
-        t.left(90)
-        t.forward(width)
-        t.left(90)
-        t.forward(height)
-        t.penup()
-        t.goto(center)
-        t.pendown()
-        
 
