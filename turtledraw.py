@@ -6,10 +6,8 @@ _Fill = False
 _Animation = True
 
 class Pen(turtle.Turtle):
-    def __init__(self,position=None,colors=None,fill=None,animate=None,turtlecfg=None):
-        if turtlecfg is None:
-            turtlecfg = _TurtleCfg
-        if turtlecfg:
+    def __init__(self,position=None,colors=None,fill=None,animate=None):
+        if _TurtleCfg:
             self.turtle_visible = True
         else:
             self.turtle_visible = False
@@ -80,7 +78,12 @@ def set_animation(yn):
 def show():
     turtle.done()
 
-def star(center,degoff,radius,*,colors=None,fill=None,animate=None):
+def star(center=(0,0),radius=10,degoff=90,*,colors=None,fill=None,animate=None):
+    """
+    center: the center point coordinate (x,y) in the star 
+    defoff: initial heading degree , anticlockwise rotated from east direction
+    radius: distance between center and the star vertex
+    """
     sidelen = 2*radius*math.cos(0.1*math.pi)
     with Pen(center,colors,fill,animate) as t:
         t.setheading(degoff)
@@ -96,12 +99,15 @@ def star(center,degoff,radius,*,colors=None,fill=None,animate=None):
         t.pendown()
 
 
-def rect(center,width,height,colors=None,fill=None,animate=None):
+def rect(center=(0,0),width=10,height=10,degoff=0,*,colors=None,fill=None,animate=None):
     with Pen(center,colors,fill,animate) as t:
+        t.setheading(degoff)
         t.penup()
-        t.goto(center[0]+width/2,center[1]+height/2)
+        t.forward(width/2)
+        t.left(90)
+        t.forward(height/2)
+        t.left(90)
         t.pendown()
-        t.setheading(180)
         t.forward(width)
         t.left(90)
         t.forward(height)
@@ -113,11 +119,17 @@ def rect(center,width,height,colors=None,fill=None,animate=None):
         t.goto(center)
         t.pendown()
         
-def line(start,end,color=None,animated=None):
-    with Pen(start,color,animate=None) as t:
+def line(start=(0,0),length=10,degoff=0,*,colors,animate):
+    fill = False
+    with Pen(start,colors,fill,animate) as t:
+        t.setheading(degoff)
+        t.forward(length)
+
+def line2(start=(0,0),end=(10,10),*,colors=None,animated=None):
+    with Pen(start,colors,animate=None) as t:
         t.goto(end)
 
-def circle(center,radius,colors=None,fill=None,animate=None):
+def circle(center,radius,*,colors=None,fill=None,animate=None):
     with Pen(center,colors,fill,animate) as t:
         t.penup()
         t.goto(center[0]+radius,center[1])
@@ -128,16 +140,58 @@ def circle(center,radius,colors=None,fill=None,animate=None):
         t.goto(center)
         t.pendown()
 
-def grid(center,width,height,rows,cols,color=None,animate=None):
+def grid(center=(0,0),width=10,height=10,rows=2,cols=2,degoff=0,*,colors=None,animate=None):
     fill = False
     row_width = height/rows
     col_width = width/cols
-    rect(center,width,height,color,fill,animate)
-    for i in range(1,rows):
-        start = (center[0]-width/2,center[1]+height/2-i*row_width)
-        end = (start[0]+width,start[1])
-        line(start,end,color,animate)
-    for j in range(1,cols):
-        start = (center[0]-width/2+j*col_width,center[1]+height/2)
-        end = (start[0],start[1]-height)
-        line(start,end,color,animate)
+    rect(center,width,height,degoff,colors=colors,fill=fill,animate=animate)
+    with Pen(center,colors,fill,animate) as t:
+        t.setheading(degoff)
+        t.penup()
+        t.backward(width/2)
+        t.right(90)
+        t.backward(height/2)
+        t.pendown()
+        pos = t.pos()
+        for _ in range(rows-1):
+            t.penup()
+            t.forward(row_width)
+            t.left(90)
+            t.pendown() 
+            t.forward(width)
+            t.penup()
+            t.backward(width)
+            t.right(90)
+            t.pendown()
+        t.penup()
+        t.goto(pos)
+        t.pendown()
+        t.setheading(degoff)
+        for _ in range(cols-1):
+            t.penup()
+            t.forward(col_width)
+            t.right(90)
+            t.pendown()
+            t.forward(height)
+            t.penup()
+            t.backward(height)
+            t.left(90)
+            t.pendown()
+        t.penup()
+        t.goto(center)
+        t.pendown()
+
+def poly(first=(0,0),second=(10,10),third=(10,0),*rest_points,colors=None,fill=None,animate=None):
+    with Pen(first,colors,fill,animate) as t:
+        t.goto(second)
+        t.goto(third)
+        for p in rest_points:
+            t.goto(p)
+        t.goto(first)
+
+if __name__ == '__main__':
+    poly((0,0),(200,300),(400,-10),(-300,-200))
+    show()
+        
+
+

@@ -1,5 +1,5 @@
 import turtledraw as td
-td.set_turtlecfg(False)
+td.set_turtlecfg(True)
 td.set_filling(True)
 td.set_animation(True)
 
@@ -26,18 +26,18 @@ for i in range(13):
         center_x,ws = 0,w
     center_y = h/2-hs/2-hs*i
     strip_color = 'white' if i%2 else 'red'
-    td.rect((center_x,center_y),ws,hs,strip_color)
+    td.rect((center_x,center_y),ws,hs,colors=strip_color)
 
-td.grid(center_a,wa-2*wp,ha-2*hp,9,11,color='black')
+td.grid(center_a,wa-2*wp,ha-2*hp,9,11,colors='black')
 
-for i in range(11):
-    for j in range(9):
+for i in range(9):
+    for j in range(11):
         if (i+j) % 2 == 0:
-            rx,ry = (i+0.5)*wc,(j+0.5)*hc
+            rx,ry = (j+0.5)*wc,(i+0.5)*hc
             center = (-w/2+wp+rx,h/2-hp-ry)
-            td.star(center,90,hc/2-1,colors='white')
+            td.star(center,hc/2-1,90,colors='white')
 
-td.grid(center_a,wa-2*wp,ha-2*hp,9,11,color='blue')
+td.grid(center_a,wa-2*wp,ha-2*hp,9,11,colors='blue')
 
 td.show()
 
