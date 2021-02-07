@@ -1,197 +1,91 @@
-import turtle
+import turtledraw as td
 import math
+td.set_turtlecfg(True)
+td.set_filling(True)
+td.set_animation(True)
 
-_TurtleCfg = None
-_Fill = False
-_Animation = True
+HEIGHT = 400
+h = HEIGHT
+wh_ratio = 2.0
+w =  h*wh_ratio
+diagonal = (w**2+h**2)**0.5
+center = (0,0)
 
-class Pen(turtle.Turtle):
-    def __init__(self,position=None,colors=None,fill=None,animate=None):
-        if _TurtleCfg:
-            self.turtle_visible = True
-        else:
-            self.turtle_visible = False
-        super().__init__(visible=self.turtle_visible)
-        self.position = position
-        self.fill = fill
-        self.animate = animate
-        if self.position:
-            self.penup()
-            self.goto(*self.position)
-            self.pendown()
-        if isinstance(colors,str):
-            pen_color = fill_color = colors
-        elif isinstance(colors,tuple) or isinstance(colors,list):
-            pen_color,fill_color = colors
-        else:
-            pen_color = fill_color = None
-        if pen_color:
-            self.pencolor(pen_color)
-        if fill_color:
-            self.fillcolor(fill_color)
-        if fill is None:
-            self.fill = _Fill
-        if animate is None:
-            self.animate = _Animation
+w_segs = 60
+h_segs = 30
+ws = w/w_segs
+hs = h/h_segs
 
-    def __enter__(self):
-        if self.animate:
-            self.speed(9)
-            self.getscreen().tracer(1,25)
-        else:
-            self.speed(0)
-            self.getscreen().tracer(0,0)
-        if self.fill:
-            self.begin_fill()
-        return self
+td.set_window('National Flag', width=w, height=h, bg='gray')
 
-    def __exit__(self,exc_type,exc_val,exc_tb):
-        if self.fill:
-            self.end_fill()
-        if self.turtle_visible:
-            self.hideturtle()
-        if not self.animate:
-            self.getscreen().update()
+td.rect(center,w,h,colors='blue')
 
-def set_window(title='',width=None,height=None,bg=None):
-    screen = turtle.Screen()
-    screen.title(title)
-    if width is None or height is None:
-        screen.setup(width=0.5, height=0.5, startx=None, starty=None)
-    else:
-        screen.setup(width,height,None,None)
-    if bg:
-        screen.bgcolor(bg)
+ds = math.sqrt((hs**2+ws**2)/2)
+radoff = math.atan2(h,w)
+ws_hy = ds / math.sin(radoff)
+hs_hy = ds / math.cos(radoff)
 
-def set_turtlecfg(cfg):
-    global _TurtleCfg
-    _TurtleCfg = cfg
+td.line2((0,h/2),(0,-h/2),colors='black')
+td.line2((-w/2,0),(w/2,0),colors='black')
 
-def set_filling(yn):
-    global _Fill
-    _Fill = yn
+upright = (w/2,h/2)
+downleft = (-w/2,-h/2)
+urw_p=[upright]
+urh_p=[upright]
+dlw_p=[downleft]
+dlh_p=[downleft]
 
-def set_animation(yn):
-    global _Animation
-    _Animation = yn
+td.line2(upright,downleft,colors='black')
+for i in range(1,4):
+    urw = (upright[0]-ws_hy*i,upright[1])
+    dlh = (downleft[0],downleft[1]+hs_hy*i)
+    td.line2(urw,dlh,colors='black')
+    urh = (upright[0],upright[1]-hs_hy*i)
+    dlw = (downleft[0]+ws_hy*i,downleft[1])
+    td.line2(urh,dlw,colors='black')
+    urw_p.append(urw)
+    urh_p.append(urh)
+    dlw_p.append(dlw)
+    dlh_p.append(dlh)
 
-def show():
-    turtle.done()
+upleft = (-w/2,h/2)
+downright = (w/2,-h/2)
+ulw_p = [upleft]
+ulh_p = [upleft]
+drw_p = [downright]
+drh_p = [downright]
 
-def star(center=(0,0),radius=10,degoff=90,*,colors=None,fill=None,animate=None):
-    """
-    center: the center point coordinate (x,y) in the star 
-    defoff: initial heading degree , anticlockwise rotated from east direction
-    radius: distance between center and the star vertex
-    """
-    sidelen = 2*radius*math.cos(0.1*math.pi)
-    with Pen(center,colors,fill,animate) as t:
-        t.setheading(degoff)
-        t.penup()
-        t.forward(radius)
-        t.pendown()
-        t.left(162)
-        for _ in range(5):
-            t.forward(sidelen)
-            t.left(144)
-        t.penup()
-        t.goto(center)
-        t.pendown()
+td.line2(upleft,downright,colors='black')
+for i in range(1,4):
+    ulw =(upleft[0]+ws_hy*i,upleft[1])
+    drh =(downright[0],downright[1]+hs_hy*i)
+    td.line2(ulw,drh,colors='black')
+    ulh =(upleft[0],upleft[1]-hs_hy*i)
+    drw = (downright[0]-ws_hy*i,downright[1])
+    td.line2(ulh,drw,colors='black')
+    ulw_p.append(ulw)
+    ulh_p.append(ulh)
+    drw_p.append(drw)
+    drh_p.append(drh)
 
+td.poly(urw_p[2],urw_p[3],dlh_p[3],dlh_p[2],colors='white')
+td.poly(dlh_p[0],dlh_p[2],(0,2*hs_hy),center,colors='white')
+td.poly(urw_p[0],urw_p[2],(-2*ws_hy,0),center,colors='red')
+td.poly(urh_p[2],urh_p[3],dlw_p[3],dlw_p[2],colors='white')
+td.poly(urh_p[0],urh_p[2],(0,-2*hs_hy),center,colors= 'white')
+td.poly(dlw_p[0],dlw_p[2],(2*ws_hy,0),center,colors='red')
 
-def rect(center=(0,0),width=10,height=10,degoff=0,*,colors=None,fill=None,animate=None):
-    with Pen(center,colors,fill,animate) as t:
-        t.setheading(degoff)
-        t.penup()
-        t.forward(width/2)
-        t.left(90)
-        t.forward(height/2)
-        t.left(90)
-        t.pendown()
-        t.forward(width)
-        t.left(90)
-        t.forward(height)
-        t.left(90)
-        t.forward(width)
-        t.left(90)
-        t.forward(height)
-        t.penup()
-        t.goto(center)
-        t.pendown()
-        
-def line(start=(0,0),length=10,degoff=0,*,colors,animate):
-    fill = False
-    with Pen(start,colors,fill,animate) as t:
-        t.setheading(degoff)
-        t.forward(length)
+td.poly(ulw_p[2],ulw_p[3],drh_p[3],drh_p[2],colors='white')
+td.poly(ulw_p[0],ulw_p[2],(2*ws_hy,0),center,colors='white')
+td.poly(drh_p[0],drh_p[2],(0,2*hs_hy),center,colors='red')
+td.poly(ulh_p[2],ulh_p[3],drw_p[3],drw_p[2],colors='white')
+td.poly(drw_p[0],drw_p[2],(-2*ws_hy,0),center,colors='white')
+td.poly(ulh_p[0],ulh_p[2],(0,-2*hs_hy),center,colors= 'red')
 
-def line2(start=(0,0),end=(10,10),*,colors=None,animated=None):
-    with Pen(start,colors,animate=None) as t:
-        t.goto(end)
+td.rect((0,0),w,10*hs,colors='white')
+td.rect((0,0),10*ws,h,colors='white')
 
-def circle(center,radius,*,colors=None,fill=None,animate=None):
-    with Pen(center,colors,fill,animate) as t:
-        t.penup()
-        t.goto(center[0]+radius,center[1])
-        t.pendown()
-        t.setheading(90)
-        t.circle(radius)
-        t.penup()
-        t.goto(center)
-        t.pendown()
+td.rect((0,0),w,6*hs,colors='red')
+td.rect((0,0),6*ws,h,colors='red')
 
-def grid(center=(0,0),width=10,height=10,rows=2,cols=2,degoff=0,*,colors=None,animate=None):
-    fill = False
-    row_width = height/rows
-    col_width = width/cols
-    rect(center,width,height,degoff,colors=colors,fill=fill,animate=animate)
-    with Pen(center,colors,fill,animate) as t:
-        t.setheading(degoff)
-        t.penup()
-        t.backward(width/2)
-        t.right(90)
-        t.backward(height/2)
-        t.pendown()
-        pos = t.pos()
-        for _ in range(rows-1):
-            t.penup()
-            t.forward(row_width)
-            t.left(90)
-            t.pendown() 
-            t.forward(width)
-            t.penup()
-            t.backward(width)
-            t.right(90)
-            t.pendown()
-        t.penup()
-        t.goto(pos)
-        t.pendown()
-        t.setheading(degoff)
-        for _ in range(cols-1):
-            t.penup()
-            t.forward(col_width)
-            t.right(90)
-            t.pendown()
-            t.forward(height)
-            t.penup()
-            t.backward(height)
-            t.left(90)
-            t.pendown()
-        t.penup()
-        t.goto(center)
-        t.pendown()
-
-def poly(first=(0,0),second=(10,10),third=(10,0),*rest_points,colors=None,fill=None,animate=None):
-    with Pen(first,colors,fill,animate) as t:
-        t.goto(second)
-        t.goto(third)
-        for p in rest_points:
-            t.goto(p)
-        t.goto(first)
-
-if __name__ == '__main__':
-    poly((0,0),(200,300),(400,-10),(-300,-200))
-    show()
-        
-
-
+td.show()
