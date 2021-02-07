@@ -198,8 +198,6 @@ def poly(first=(0,0),second=(10,10),third=(10,0),*rest_points,colors=None,fill=N
         t.goto(first)
 
 if __name__ == '__main__':
-    poly((0,0),(200,300),(400,-10),(-300,-200))
-    show()
-        
+    pass 
 
 
