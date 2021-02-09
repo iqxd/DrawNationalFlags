@@ -1,9 +1,9 @@
-from turtle import _Screen,RawTurtle,Screen,mainloop
+from turtle import _Screen, RawTurtle, Screen, mainloop
 import math
 from typing import Union
 
 
-class FlagBuilder:
+class Canvas:
     screen: _Screen
     guider: RawTurtle
     painter: RawTurtle
@@ -11,8 +11,8 @@ class FlagBuilder:
 
     def __init__(self,
                  title: str,
-                 width: Union[int, float] = 0.5,
-                 height: Union[int, float] = 0.5,
+                 width: int,
+                 height: int,
                  bgcolor: str = 'gray',
                  animate: bool = True) -> None:
         screen = Screen()
@@ -35,15 +35,16 @@ class FlagBuilder:
         self.painter = painter
         self.animate = animate
 
-    def finish(self)->None:
+    def finish(self) -> None:
         self.guider.hideturtle()
         self.painter.hideturtle()
         if not self.animate:
             self.screen.update()
         mainloop()
 
+
 if __name__ == '__main__':
-    f = FlagBuilder('test',500,500)
+    f = Canvas('test', 500, 500)
     f.guider.circle(100)
     f.painter.forward(200)
     f.finish()
